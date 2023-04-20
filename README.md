@@ -1,2 +1,2 @@
-# gene_predict_project
+# Gene Prediction model
 ням
