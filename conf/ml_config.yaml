@@ -1,0 +1,11 @@
+params:
+  a = 10
+
+files:
+  sequence_data: chromosome1.fasta
+  cds_location_data: cds_location_data.csv
+  features_data: data_for_ml_model.csv
+
+paths:
+  log: ./runs
+  data: ${hydra:runtime:cwd}/../data
