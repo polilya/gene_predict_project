@@ -1,3 +1,6 @@
+import logging    # first of all import the module
+log = logging.getLogger(__name__)
+
 from Bio import SeqIO
 
 import hydra
@@ -7,13 +10,12 @@ from config import MLConfig
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import re
 
 from tqdm import tqdm
 
 import tools
 from tools import calculate_kmer_features, signs
-
-import re
 
 np.random.seed(42)
 
@@ -56,11 +58,12 @@ def main(cfg: MLConfig):
     prediction = model.predict(X_test)
     cm = confusion_matrix(prediction, Y_test)
 
-    print(f'f1 score:{f1_score(Y_test, prediction)}')
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm.T, display_labels=model.classes_)
-    fig, ax = plt.subplots(dpi=120)
-    disp.plot(ax=ax)
-    plt.show()
+    log.info(f'f1 score: {f1_score(Y_test, prediction):.3f}')
+
+    # disp = ConfusionMatrixDisplay(confusion_matrix=cm.T, display_labels=model.classes_)
+    # fig, ax = plt.subplots(dpi=120)
+    # disp.plot(ax=ax)
+    # plt.show()
 
     loc_start_codon = [m.start() for m in re.finditer('ATG', sequence)]
 
@@ -68,7 +71,7 @@ def main(cfg: MLConfig):
     rb = cfg.model_params.right_boundary
     step = cfg.model_params.step
     
-    for graph in tqdm(range(0, 2, 1)):
+    for graph in tqdm(range(0, 1, 1)):
 
         fig, ax = plt.subplots(dpi=120)
         i, j = seq_before_cds_location[graph]
@@ -90,13 +93,14 @@ def main(cfg: MLConfig):
         prob_metric = res[lb // step:-rb // step].mean() / res.mean()
         plt.title(f'prob_metric: {prob_metric:.3f}')
 
+        log.info(f'prob_metric: {prob_metric:.3f}')
 
         local_start_codon = [c for c in loc_start_codon if ((c >= i - lb) and (c <= j + rb))]
         for codon in local_start_codon:
             ax.axvspan(codon, codon + 3, alpha=0.5, color='green')
 
         plt.plot(scope, res)
-        plt.show()
+        #plt.show()
 
 
 if __name__ == "__main__":
