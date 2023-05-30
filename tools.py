@@ -45,8 +45,8 @@ def calculate_kmer_features(sequence, signs):
 
 def apply_pca(X_train, X_test):
     x_scaler = StandardScaler()
-    X_train = x_scaler.fit_transform(X_train)
-    X_test = x_scaler.transform(X_test)
+    X_train_scaled = x_scaler.fit_transform(X_train)
+    X_test_scaled = x_scaler.transform(X_test)
 
     pca = PCA(n_components=0.9)
     pca.fit(X_train_scaled)
