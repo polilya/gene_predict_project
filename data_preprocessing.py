@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from bisect import bisect
 
-from preprocess_config import MLConfig
+from config import MLConfig
 from tools import calculate_kmer_features, signs
 
 np.random.seed(42)
@@ -14,8 +14,10 @@ np.random.seed(42)
 cs = ConfigStore.instance()
 cs.store(name='ml_config', node=MLConfig)
 
-@hydra.main(config_path='conf', config_name='preprocess_config')
+
+@hydra.main(config_path='conf', config_name='config', version_base=None)
 def main(cfg: MLConfig):
+
     sequence_data = f'{cfg.paths.data}/{cfg.files.sequence}'
     with open(sequence_data) as file:
         fasta_sequences = SeqIO.parse(file, 'fasta')
@@ -58,7 +60,7 @@ def main(cfg: MLConfig):
         seq_before_cds.append(sequence[i:j])
 
     seq_zero_location = []
-    for sample in range(int(cfg.params.num_of_samples * seq_before_cds_location.shape[0])):
+    for sample in range(int(cfg.preprocess_params.num_of_samples * seq_before_cds_location.shape[0])):
         b = np.random.randint(1e4, 2e8)
         bounds = (b, b + int(np.random.exponential(scale=200.0) + 50))
 
@@ -88,7 +90,7 @@ def main(cfg: MLConfig):
     start_data.loc[:, 'target'] = 1
     zero_data.loc[:, 'target'] = 0
     data = pd.concat([start_data, zero_data], axis=0)
-    data.to_csv(f'{cfg.paths.data}/{cfg.files.final_data}', index=False)
+    data.to_csv(f'{cfg.paths.data}/{cfg.files.features}', index=False)
 
 
 if __name__ == "__main__":
