@@ -1,0 +1,21 @@
+model_params:
+  class_weight: 2
+  windows:
+      - 500
+      - 1000
+      - 2000
+      - 5000
+  left_boundary: 2000
+  right_boundary: 2000
+  step: 5
+
+files:
+  sequence: chromosome1.fasta
+  cds: cds.csv
+  cds_location: last_cds_location.csv
+  exons: exons.csv
+  features: end_features.csv
+  
+paths:
+  data: data
+  log: log

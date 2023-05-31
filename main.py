@@ -1,10 +1,9 @@
-import logging    # first of all import the module
-log = logging.getLogger(__name__)
+import logging
 
 from Bio import SeqIO
 
 import hydra
-from hydra.core.config_store import ConfigStore
+from hydra.core.config_store import ConfigStore, OmegaConf
 from config import MLConfig
 
 import pandas as pd
@@ -20,20 +19,17 @@ from tools import calculate_kmer_features, signs
 np.random.seed(42)
 
 from sklearn.svm import SVC
-from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import LogisticRegression
-
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import RandomizedSearchCV
-
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import f1_score
 
 cs = ConfigStore.instance()
 cs.store(name='ml_config', node=MLConfig)
 
-@hydra.main(config_path='conf', config_name='config', version_base=None)
+
+@hydra.main(config_path='conf', config_name='config_start', version_base=None)
 def main(cfg: MLConfig):
+
+    logging.info('Script start')
     
     sequence_data = f'{cfg.paths.data}/{cfg.files.sequence}'
     with open(sequence_data) as file:
@@ -50,28 +46,24 @@ def main(cfg: MLConfig):
 
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.33, random_state=42, stratify=Y)
 
-    model = SVC(kernel='rbf', C=2, class_weight={0: 1, 1: cfg.model_params.class_weight}, probability=True)
+    model = SVC(**OmegaConf.to_container(cfg.params))
 
-    X_train, X_test, LDA, x_scaler = tools.apply_lda(X_train, Y_train, X_test)
+    X_train, X_test, LDA, x_scaler = tools.apply_lda(X_train, X_test, Y_train)
 
+    logging.info('Start training...')
     model.fit(X_train, Y_train)
+    logging.info('Training done...')
     prediction = model.predict(X_test)
-    cm = confusion_matrix(prediction, Y_test)
 
-    log.info(f'f1 score: {f1_score(Y_test, prediction):.3f}')
+    logging.info(f'f1 score: {f1_score(Y_test, prediction):.3f}')
 
-    # disp = ConfusionMatrixDisplay(confusion_matrix=cm.T, display_labels=model.classes_)
-    # fig, ax = plt.subplots(dpi=120)
-    # disp.plot(ax=ax)
-    # plt.show()
+    #loc_start_codon = [m.start() for m in re.finditer('ATG', sequence)]
 
-    loc_start_codon = [m.start() for m in re.finditer('ATG', sequence)]
-
-    lb = cfg.model_params.left_boundary
-    rb = cfg.model_params.right_boundary
-    step = cfg.model_params.step
+    lb = cfg.add_params.left_boundary
+    rb = cfg.add_params.right_boundary
+    step = cfg.add_params.step
     
-    for graph in tqdm(range(0, 1, 1)):
+    for graph in range(1, 251, 50):
 
         fig, ax = plt.subplots(dpi=120)
         i, j = seq_before_cds_location[graph]
@@ -80,7 +72,7 @@ def main(cfg: MLConfig):
 
         res = []
         
-        for w in cfg.model_params.windows:
+        for w in cfg.add_params.windows:
             for point in scope:
                 scores = calculate_kmer_features(sequence[point - w // 2: point + w // 2], signs)['Entropy']
                 scores = scores.values.reshape(1, -1)
@@ -88,19 +80,21 @@ def main(cfg: MLConfig):
                 scores = LDA.transform(scores)
                 res.append(model.predict_proba(scores)[0][1])
 
-        res = np.array(res).reshape(len(cfg.model_params.windows), -1).mean(axis=0)
+        res = np.array(res).reshape(len(cfg.add_params.windows), -1).mean(axis=0)
 
         prob_metric = res[lb // step:-rb // step].mean() / res.mean()
-        plt.title(f'prob_metric: {prob_metric:.3f}')
 
-        log.info(f'prob_metric: {prob_metric:.3f}')
+        logging.info(f'prob_metric for sample {graph}: {prob_metric:.3f}')
 
-        local_start_codon = [c for c in loc_start_codon if ((c >= i - lb) and (c <= j + rb))]
-        for codon in local_start_codon:
-            ax.axvspan(codon, codon + 3, alpha=0.5, color='green')
+        # local_start_codon = [c for c in loc_start_codon if ((c >= i - lb) and (c <= j + rb))]
+        # for codon in local_start_codon:
+        #     ax.axvspan(codon, codon + 3, alpha=0.5, color='green')
 
+        plt.title(f'Example №{graph} [prob_metric: {prob_metric:.3f}]')
         plt.plot(scope, res)
-        #plt.show()
+        plt.show()
+
+    logging.info('Script done!')
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ import collections
 import math
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -51,24 +52,40 @@ def check_intersection(bounds, seq_before_location, seq_after_location):
     
     for bounds2 in np.array(seq_before_location):
         r = max(bounds[0], bounds2[0]), min(bounds[1]+1, bounds2[1]+1)
-        if set(range(*r))!=set():
+        if set(range(*r)) != set():
             flag = 1
             break
          
-    if flag==1: 
+    if flag == 1:
         return False
     
     for bounds2 in np.array(seq_after_location):
         r = max(bounds[0], bounds2[0]), min(bounds[1]+1, bounds2[1]+1)
-        if set(range(*r))!=set():
+        if set(range(*r)) != set():
             flag = 1
             break
     
-    if flag==1: 
+    if flag == 1:
         return False
     
-    elif flag==0:
+    elif flag == 0:
         return True
+
+
+def check_self_intersection(seq_zero_location):
+    seq_zero_location_new = []
+
+    for bounds1 in tqdm(np.array(seq_zero_location)):
+        seq_zero_location = seq_zero_location[1:]
+        flag = 0
+        for bounds2 in np.array(seq_zero_location):
+            r = max(bounds1[0], bounds2[0]), min(bounds1[1] + 1, bounds2[1] + 1)
+            if set(range(*r)) != set():
+                flag = 1
+                break
+        if flag == 0: seq_zero_location_new.append(bounds1)
+
+    return pd.DataFrame(seq_zero_location_new, columns=['start', 'end'])
 
 
 def get_sequence(location_data, sequence):
@@ -96,11 +113,11 @@ def calculate_features(in_data):
     return data
 
 
-def apply_pca(X_train, X_test):
+def apply_pca(X_train, X_test, Y_train=0):
     
     x_scaler = StandardScaler()
-    X_train = x_scaler.fit_transform(X_train)
-    X_test = x_scaler.transform(X_test)
+    X_train_scaled = x_scaler.fit_transform(X_train)
+    X_test_scaled = x_scaler.transform(X_test)
 
     pca = PCA(n_components=0.9)
     pca.fit(X_train_scaled)
@@ -110,7 +127,7 @@ def apply_pca(X_train, X_test):
     return PC_train, PC_test, pca, x_scaler
 
 
-def apply_lda(X_train, Y_train, X_test):
+def apply_lda(X_train, X_test, Y_train):
      
     
     x_scaler = StandardScaler()

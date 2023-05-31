@@ -12,13 +12,13 @@ from config import MLConfig
 
 import tools
 
-np.random.seed(42)
+np.random.seed(10)
 
 cs = ConfigStore.instance()
 cs.store(name='ml_config', node=MLConfig)
 
 
-@hydra.main(config_path='conf', config_name='config', version_base=None)
+@hydra.main(config_path='conf', config_name='config_ppr', version_base=None)
 def main(cfg: MLConfig):
 
     logging.info('Preprocessing starts')
@@ -66,10 +66,14 @@ def main(cfg: MLConfig):
         seq_after_cds_location.append((cds_end, exons_ends[p]))
     seq_after_cds_location = np.array(seq_after_cds_location)
 
-    start_cds_location_data = tools.limit(seq_before_cds_location, min_length=50, max_length=1500)
+    start_cds_location_data = tools.limit(seq_before_cds_location,
+                                          min_length=cfg.preprocess_params.start_min_length,
+                                          max_length=cfg.preprocess_params.start_max_length)
     start_cds_location_data.to_csv(f'{cfg.paths.data}/{cfg.files.first_cds_location}', index=False)
 
-    end_cds_location_data = tools.limit(seq_after_cds_location, min_length=100, max_length=10000)
+    end_cds_location_data = tools.limit(seq_after_cds_location,
+                                        min_length=cfg.preprocess_params.end_min_length,
+                                        max_length=cfg.preprocess_params.end_max_length)
     end_cds_location_data.to_csv(f'{cfg.paths.data}/{cfg.files.last_cds_location}', index=False)
 
     logging.info(f'Number of first cds after limiting: {len(start_cds_location_data)}')
@@ -82,7 +86,7 @@ def main(cfg: MLConfig):
     seq_zero_location = []
     for _ in tqdm(range(n)):
         b = np.random.randint(1e4, 2e8)
-        L = int(np.random.exponential(scale=200.0) + 50)
+        L = int(np.random.exponential(scale=600.0) + 50)
         bounds = (b, b + L)
 
         flag = tools.check_intersection(bounds, start_cds_location_data, end_cds_location_data)
@@ -90,9 +94,16 @@ def main(cfg: MLConfig):
         if flag:
             seq_zero_location.append(bounds)
 
-    logging.info(f'Fraction of excluded samples: {round(100*(1 - (len(seq_zero_location)/n)), 1)}%')
+    seq_zero_location_l = len(seq_zero_location)
+    logging.info(f'Number of excluded samples [1-0 intersection]: {n - seq_zero_location_l}')
 
-    seq_zero = tools.get_sequence(seq_zero_location, sequence)
+    seq_zero_location_new = tools.check_self_intersection(seq_zero_location)
+    seq_zero_location_new_l = len(seq_zero_location_new)
+    logging.info(f'Number of excluded samples [0-0 intersection]: {seq_zero_location_l - seq_zero_location_new_l}')
+
+    logging.info(f'Total number of excluded samples: {n - seq_zero_location_new_l}')
+
+    seq_zero = tools.get_sequence(seq_zero_location_new, sequence)
 
     start_data = tools.calculate_features(seq_before_cds)
     end_data = tools.calculate_features(seq_after_cds)
@@ -101,14 +112,19 @@ def main(cfg: MLConfig):
     logging.info(f'Number of samples: first cds: {start_data.shape[0]}, last cds: {end_data.shape[0]}, zero_class: {zero_data.shape[0]}')
 
     start_data.loc[:, 'target'] = 1
+    end_data.loc[:, 'target'] = 0
+    zero_data.loc[:, 'target'] = 0
+
+    start_data_final = pd.concat([start_data, end_data, zero_data], axis=0)
+
+    start_data.loc[:, 'target'] = 0
     end_data.loc[:, 'target'] = 1
     zero_data.loc[:, 'target'] = 0
 
-    start_data = pd.concat([start_data, zero_data], axis=0)
-    end_data = pd.concat([end_data, zero_data], axis=0)
+    end_data_final = pd.concat([end_data, start_data, zero_data], axis=0)
 
-    start_data.to_csv(f'{cfg.paths.data}/{cfg.files.start_features}', index=False)
-    end_data.to_csv(f'{cfg.paths.data}/{cfg.files.end_features}', index=False)
+    start_data_final.to_csv(f'{cfg.paths.data}/{cfg.files.start_features}', index=False)
+    end_data_final.to_csv(f'{cfg.paths.data}/{cfg.files.end_features}', index=False)
 
     logging.info('Preprocessing done!')
 

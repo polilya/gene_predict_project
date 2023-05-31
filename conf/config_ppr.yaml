@@ -1,0 +1,19 @@
+preprocess_params:
+  num_of_samples: 8000
+  start_min_length: 50
+  start_max_length: 1500
+  end_min_length: 100
+  end_max_length: 5000
+
+files:
+  sequence: chromosome1.fasta
+  cds: cds.csv
+  first_cds_location: first_cds_location.csv
+  last_cds_location: last_cds_location.csv
+  exons: exons.csv
+  start_features: start_features.csv
+  end_features: end_features.csv
+  
+paths:
+  data: data
+  log: log

@@ -1,0 +1,31 @@
+params:
+  class_weight:
+      0: 1
+      1: 2
+  kernel: rbf
+  gamma: scale
+  decision_function_shape: ovr
+  C: 160
+  probability: True
+
+add_params:
+  windows: 
+      - 50
+      - 100
+      - 200
+      - 300
+  left_boundary: 1000
+  right_boundary: 1000
+  step: 5
+
+
+files:
+  sequence: chromosome1.fasta
+  cds: cds.csv
+  cds_location: first_cds_location.csv
+  exons: exons.csv
+  features: start_features.csv
+  
+paths:
+  data: data
+  log: log

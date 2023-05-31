@@ -2,6 +2,16 @@ from dataclasses import dataclass
 
 @dataclass
 class ModelParams:
+    class_weight: dict
+    kernel: str
+    gamma: str
+    decision_function_shape: str
+    C: int
+    probability: bool
+
+
+@dataclass
+class AddParams:
     class_weight: int
     windows: list
     left_boundary: int
@@ -11,6 +21,10 @@ class ModelParams:
 @dataclass
 class PPParams:
     num_of_samples: int
+    start_min_length: int
+    start_max_length: int
+    end_min_length: int
+    end_max_length: int
 
 @dataclass
 class Paths:
@@ -21,9 +35,11 @@ class Paths:
 class Files:
     sequence: str
     cds: str
+    cds_location: str
+    exons: str
+    features: str
     first_cds_location: str
     last_cds_location: str
-    exons: str
     start_features: str
     end_features: str
 
@@ -31,5 +47,6 @@ class Files:
 class MLConfig:
     paths: Paths
     files: Files
-    model_params: ModelParams
+    params: ModelParams
+    add_params: AddParams
     preprocess_params: PPParams
