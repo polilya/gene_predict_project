@@ -1,6 +1,6 @@
 # полезные функции в отдельном пакете
 
-
+import collections
 import math
 import pandas as pd
 
