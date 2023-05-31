@@ -21,9 +21,11 @@ class Paths:
 class Files:
     sequence: str
     cds: str
-    cds_location: str
+    first_cds_location: str
+    last_cds_location: str
     exons: str
-    features: str
+    start_features: str
+    end_features: str
 
 @dataclass
 class MLConfig:

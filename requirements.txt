@@ -1,2 +1,7 @@
-#необходимые библиотеки
 biopython
+hydra-core
+pandas
+numpy
+matplotlib
+tqdm
+scikit-learn

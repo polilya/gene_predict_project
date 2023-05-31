@@ -11,14 +11,16 @@ model_params:
   step: 5
 
 preprocess_params:
-  num_of_samples: 5
+  num_of_samples: 6000
 
 files:
   sequence: chromosome1.fasta
   cds: cds.csv
-  cds_location: cds_location_data.csv
+  first_cds_location: first_cds_location.csv
+  last_cds_location: last_cds_location.csv
   exons: exons.csv
-  features: features.csv
+  start_features: start_features.csv
+  end_features: end_features.csv
   
 paths:
   data: data
