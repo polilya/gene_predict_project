@@ -11,42 +11,44 @@
 - The open read frame (ORF) представляет собой область, состоящую из экзонов и интронов, которая траскрибируется сначала на pre-mRNA, а затем в процессе слайсинга происходит "вырезание" интронных областей и образование конечной, готовой к трансляции mRNA. 
 
 - Регуляторные последовательсноти расположены по обеим сторонам от ORF. 5'UTR и 3'UTR - это нетранслируемые участки, содержащие регуляторные элементы.
-
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок1.png" width="400">
+<p align="center">
+   <img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок1.png" width="400">
+</p>
 
 ### *Закономерности в строении последовательностей*
 
 1. ATG - стартовый кодон, с которого начинается процесс транскрипции, TAA, TAG и TGA - стоп кодон, прерывающие данный процесс.
-
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок6.jpg" width="400">
-
+<p align="center">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок6.jpg" width="400">
+</p>
 2. В 99% случаев интроны начинаются с последовательности GT (GU в РНК) и заканчиваются последовательностью AG. 
-
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок2.png" width="400">
-
+<p align="center">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок2.png" width="400">
+</p>
 3. В результате сплайсинга кодон может быть разделен интроном тремя способами. Следовательно, число нуклеотидов в экзонах или интронах НЕ ОБЯЗАТЕЛЬНО кратно трем.
-
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок5.png" width="400">
-
+<p align="center">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок5.png" width="400">
+</p>
 4. Гены, кодирующие белок, транскрибируются РНК-полимеразой II с образованием мРНК. Промоторы многих генов, транскрибируемых полимеразой II, содержат последовательность, подобную TATAA, на 25–30 нуклеотидов выше сайта начала транскрипции. 
-
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок3.png" width="400">
-
+<p align="center">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок3.png" width="400">
+</p>
 5. Консенсусная последовательность Козака (Консенсус Козака или последовательность Козака) представляет собой мотив нуклеиновой кислоты, который функционирует как сайт инициации трансляции белка в большинстве эукариотических транскриптов мРНК.
 
-    *(gcc)gccRccATGG*
+ *(gcc)gccRccATGG*
 
 - Подчеркнутые нуклеотиды указывают кодон начала трансляции , кодирующий метионин, если рассматривать для ДНК, то ATG соответственно.
 - Заглавные буквы обозначают высоко консервативные основания , т.е. последовательность «AUGG» постоянна или редко, если вообще меняется.  
 - «R» означает, что в этом положении всегда наблюдается пурин (аденин или гуанин) (по Козаку чаще встречается аденин).
 - Строчная буква обозначает наиболее распространенное основание в положении, где основание, тем не менее, может варьироваться.
 - Последовательность в скобках (gcc) имеет неопределенное значение.
-
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок4.png" width="400">
-
+<p align="center">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок4.png" width="400">
+</p>
 6. На расстоянии приблизительно 300 п.н. от стоп кодона расположена консенсусная последовательность AATAAA.
-
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок7.jpg" width="400">
+<p align="center">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок7.jpg" width="400">
+</p>
 
 ## Используемый датасет
 
