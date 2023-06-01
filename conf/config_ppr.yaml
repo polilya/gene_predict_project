@@ -1,5 +1,5 @@
 preprocess_params:
-  num_of_samples: 8000
+  num_of_samples: 3000
   start_min_length: 50
   start_max_length: 1500
   end_min_length: 100

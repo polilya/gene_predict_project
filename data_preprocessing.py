@@ -86,11 +86,16 @@ def main(cfg: MLConfig):
     seq_zero_location = []
     for _ in tqdm(range(n)):
         b = np.random.randint(1e4, 2e8)
-        L = int(np.random.exponential(scale=600.0) + 50)
+        L = int(np.random.exponential(scale=140.0) + 50)
         bounds = (b, b + L)
-
         flag = tools.check_intersection(bounds, start_cds_location_data, end_cds_location_data)
+        if flag:
+            seq_zero_location.append(bounds)
 
+        b = np.random.randint(1e4, 2e8)
+        L = int(np.random.exponential(scale=1400.0) + 50)
+        bounds = (b, b + L)
+        flag = tools.check_intersection(bounds, start_cds_location_data, end_cds_location_data)
         if flag:
             seq_zero_location.append(bounds)
 

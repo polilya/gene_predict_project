@@ -65,7 +65,7 @@ def main(cfg: MLConfig):
     metrcis_dist = []
     plot_status = cfg.add_params.plot
 
-    for graph in tqdm(range(0, cds_location_data.shape[0], 1)):
+    for graph in tqdm(range(0, cds_location_data.shape[0], 10)):
 
         i, j = cds_location_data[graph]
         length = j - i
