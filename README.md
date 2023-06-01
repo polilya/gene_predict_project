@@ -12,7 +12,7 @@
 
 - Регуляторные последовательсноти расположены по обеим сторонам от ORF. 5'UTR и 3'UTR - это нетранслируемые участки, содержащие регуляторные элементы.
 
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок1.png" width="400">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок1.png" width="400">
 
 ### *Закономерности в строении последовательностей*
 
