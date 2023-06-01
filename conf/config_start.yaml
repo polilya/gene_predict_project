@@ -14,10 +14,8 @@ add_params:
       - 100
       - 200
       - 300
-  left_boundary: 1000
-  right_boundary: 1000
   step: 5
-
+  plot: False
 
 files:
   sequence: chromosome1.fasta

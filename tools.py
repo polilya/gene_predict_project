@@ -113,6 +113,23 @@ def calculate_features(in_data):
     return data
 
 
+def dice_metric(res, length, step=1):
+    '''
+    Рассчитывает Dice метрику
+    res - лист с значениями вероятности, предсказанными моделью
+    length - длина области интереса
+    step - шаг прохода окном, который использовался, чтобы рассчитать res
+    '''
+
+    Y = np.interp(np.arange(0, 5 * length / step, 1 / step), np.arange(0, 5 * length / step), res)
+
+    true_area = 1.0 * length
+    pred_area = Y.sum()
+    intersection = Y[2 * length:-2 * length].sum()
+    score = 2 * intersection / (true_area + pred_area)
+    return score
+
+
 def apply_pca(X_train, X_test, Y_train=0):
     
     x_scaler = StandardScaler()

@@ -9,14 +9,11 @@ class ModelParams:
     C: int
     probability: bool
 
-
 @dataclass
 class AddParams:
-    class_weight: int
     windows: list
-    left_boundary: int
-    right_boundary: int
     step: int
+    plot: bool
     
 @dataclass
 class PPParams:

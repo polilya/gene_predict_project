@@ -47,8 +47,8 @@ def main(cfg: MLConfig):
                          kernel=['linear', 'rbf', 'sigmoid'],
                          gamma=['scale', 'auto'],
                          decision_function_shape=['ovo', 'ovr'],
-                         class_weight=[{0: 1, 1: 1}, {0: 1, 1: 2}, {0: 1, 1: 3},
-                                       {0: 1, 1: 4}, {0: 1, 1: 5}, {0: 2, 1: 1}])
+                         class_weight=[{0: 1, 1: 1}, {0: 1, 1: 2},
+                                       {0: 1, 1: 3}, {0: 2, 1: 1}])
 
     clf = RandomizedSearchCV(model, distributions, scoring='f1', random_state=0, verbose=2)
     search = clf.fit(X_train, Y_train)

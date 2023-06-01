@@ -1,13 +1,21 @@
-model_params:
-  class_weight: 2
+params:
+  class_weight:
+      0: 1
+      1: 2
+  kernel: rbf
+  gamma: scale
+  decision_function_shape: ovr
+  C: 160
+  probability: True
+
+add_params:
   windows:
       - 500
       - 1000
       - 2000
       - 5000
-  left_boundary: 2000
-  right_boundary: 2000
   step: 5
+  plot: False
 
 files:
   sequence: chromosome1.fasta

@@ -9,6 +9,7 @@ from config import MLConfig
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats as stats
 import re
 
 from tqdm import tqdm
@@ -39,7 +40,7 @@ def main(cfg: MLConfig):
 
     data = pd.read_csv(f'{cfg.paths.data}/{cfg.files.features}')
     cds_location_data = pd.read_csv(f'{cfg.paths.data}/{cfg.files.cds_location}')
-    seq_before_cds_location = np.array(cds_location_data)
+    cds_location_data = np.array(cds_location_data)
 
     Y = data['target'].values
     X = data.drop(['target'], axis=1).values
@@ -58,17 +59,22 @@ def main(cfg: MLConfig):
     logging.info(f'f1 score: {f1_score(Y_test, prediction):.3f}')
 
     #loc_start_codon = [m.start() for m in re.finditer('ATG', sequence)]
+    logging.info('Start evaluation...')
 
-    lb = cfg.add_params.left_boundary
-    rb = cfg.add_params.right_boundary
     step = cfg.add_params.step
-    
-    for graph in range(1, 251, 50):
+    metrcis_dist = []
+    plot_status = cfg.add_params.plot
 
-        fig, ax = plt.subplots(dpi=120)
-        i, j = seq_before_cds_location[graph]
-        ax.axvspan(i, j, alpha=0.6, color='red')
-        scope = np.arange(i - lb, j + rb, step).astype('int')
+    for graph in tqdm(range(0, cds_location_data.shape[0], 1)):
+
+        i, j = cds_location_data[graph]
+        length = j - i
+
+        if plot_status:
+            fig, ax = plt.subplots(dpi=120)
+            ax.axvspan(i, j, alpha=0.6, color='red')
+
+        scope = np.arange(i - 2*length, j + 2*length, step).astype('int')
 
         res = []
         
@@ -81,18 +87,35 @@ def main(cfg: MLConfig):
                 res.append(model.predict_proba(scores)[0][1])
 
         res = np.array(res).reshape(len(cfg.add_params.windows), -1).mean(axis=0)
-
-        prob_metric = res[lb // step:-rb // step].mean() / res.mean()
-
-        logging.info(f'prob_metric for sample {graph}: {prob_metric:.3f}')
+        res_metric = tools.dice_metric(res, length, step)
+        metrcis_dist.append(res_metric)
 
         # local_start_codon = [c for c in loc_start_codon if ((c >= i - lb) and (c <= j + rb))]
         # for codon in local_start_codon:
         #     ax.axvspan(codon, codon + 3, alpha=0.5, color='green')
 
-        plt.title(f'Example №{graph} [prob_metric: {prob_metric:.3f}]')
-        plt.plot(scope, res)
-        plt.show()
+        if plot_status:
+            logging.info(f'prob_metric for sample {graph:3}: {res_metric:.3f}')
+            plt.title(f'Example №{graph} [prob_metric: {res_metric:.3f}]')
+            plt.plot(scope, res)
+            plt.show()
+
+    mu = np.array(metrcis_dist).mean()
+    sigma = np.array(metrcis_dist).std()
+
+    dist = np.random.normal(mu, sigma, 1000)
+    density = stats.gaussian_kde(dist)
+
+    n, x, _ = plt.hist(metrcis_dist, density=True, bins='sturges', linewidth=1, color='skyblue', edgecolor='black')
+    x_d = np.linspace(x[0], x[-1], 500)
+    plt.plot(x_d, density(x_d))
+    plt.title(f'Dice metric distribution [μ={mu:.2f} std={sigma:.2f}]')
+    plt.show()
+
+    logging.info(f'Mean of Dice metric distribution: {mu:.2f}')
+    logging.info(f'Std of Dice metric distribution: {sigma:.2f}')
+
+    logging.info('Evaluation done')
 
     logging.info('Script done!')
 
