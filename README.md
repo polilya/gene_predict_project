@@ -12,25 +12,25 @@
 
 - Регуляторные последовательсноти расположены по обеим сторонам от ORF. 5'UTR и 3'UTR - это нетранслируемые участки, содержащие регуляторные элементы.
 
-![Общее строение ДНК](https://github.com/polilya/gene_predict_project/blob/main/Рисунок1.png)
+<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок1.png" width="400">
 
 ### *Закономерности в строении последовательностей*
 
 1. ATG - стартовый кодон, с которого начинается процесс транскрипции, TAA, TAG и TGA - стоп кодон, прерывающие данный процесс.
 
-![Кодоны](https://github.com/polilya/gene_predict_project/blob/main/Рисунок6.jpg)
+<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок6.jpg" width="400">
 
 2. В 99% случаев интроны начинаются с последовательности GT (GU в РНК) и заканчиваются последовательностью AG. 
 
-![Экзон-интрон](https://github.com/polilya/gene_predict_project/blob/main/Рисунок2.png)
+<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок2.png" width="400">
 
 3. В результате сплайсинга кодон может быть разделен интроном тремя способами. Следовательно, число нуклеотидов в экзонах или интронах НЕ ОБЯЗАТЕЛЬНО кратно трем.
 
-![Сплайсин](https://github.com/polilya/gene_predict_project/blob/main/Рисунок5.png)
+<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок5.png" width="400">
 
 4. Гены, кодирующие белок, транскрибируются РНК-полимеразой II с образованием мРНК. Промоторы многих генов, транскрибируемых полимеразой II, содержат последовательность, подобную TATAA, на 25–30 нуклеотидов выше сайта начала транскрипции. 
 
-![ТАТА](https://github.com/polilya/gene_predict_project/blob/main/Рисунок3.png)
+<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок3.png" width="400">
 
 5. Консенсусная последовательность Козака (Консенсус Козака или последовательность Козака) представляет собой мотив нуклеиновой кислоты, который функционирует как сайт инициации трансляции белка в большинстве эукариотических транскриптов мРНК.
 
@@ -42,11 +42,11 @@
 - Строчная буква обозначает наиболее распространенное основание в положении, где основание, тем не менее, может варьироваться.
 - Последовательность в скобках (gcc) имеет неопределенное значение.
 
-![Козак](https://github.com/polilya/gene_predict_project/blob/main/Рисунок4.png)
+<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок4.png" width="400">
 
 6. На расстоянии приблизительно 300 п.н. от стоп кодона расположена консенсусная последовательность AATAAA.
 
-![Сайт полиаденирования](https://github.com/polilya/gene_predict_project/blob/main/Рисунок7.jpg)
+<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок7.jpg" width="400">
 
 ## Используемый датасет
 
