@@ -18,19 +18,19 @@
 
 1. ATG - стартовый кодон, с которого начинается процесс транскрипции, TAA, TAG и TGA - стоп кодон, прерывающие данный процесс.
 
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок6.jpg" width="400">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок6.jpg" width="400">
 
 2. В 99% случаев интроны начинаются с последовательности GT (GU в РНК) и заканчиваются последовательностью AG. 
 
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок2.png" width="400">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок2.png" width="400">
 
 3. В результате сплайсинга кодон может быть разделен интроном тремя способами. Следовательно, число нуклеотидов в экзонах или интронах НЕ ОБЯЗАТЕЛЬНО кратно трем.
 
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок5.png" width="400">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок5.png" width="400">
 
 4. Гены, кодирующие белок, транскрибируются РНК-полимеразой II с образованием мРНК. Промоторы многих генов, транскрибируемых полимеразой II, содержат последовательность, подобную TATAA, на 25–30 нуклеотидов выше сайта начала транскрипции. 
 
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок3.png" width="400">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок3.png" width="400">
 
 5. Консенсусная последовательность Козака (Консенсус Козака или последовательность Козака) представляет собой мотив нуклеиновой кислоты, который функционирует как сайт инициации трансляции белка в большинстве эукариотических транскриптов мРНК.
 
@@ -42,11 +42,11 @@
 - Строчная буква обозначает наиболее распространенное основание в положении, где основание, тем не менее, может варьироваться.
 - Последовательность в скобках (gcc) имеет неопределенное значение.
 
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок4.png" width="400">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок4.png" width="400">
 
 6. На расстоянии приблизительно 300 п.н. от стоп кодона расположена консенсусная последовательность AATAAA.
 
-<img src="https://github.com/polilya/gene_predict_project/blob/main/Рисунок7.jpg" width="400">
+<img src="https://github.com/polilya/gene_predict_project/blob/main/figures/Рисунок7.jpg" width="400">
 
 ## Используемый датасет
 
