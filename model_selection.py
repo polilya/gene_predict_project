@@ -11,6 +11,7 @@ from sklearn.linear_model import LogisticRegression
 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import RandomizedSearchCV
+import scipy.stats as stats
 
 import numpy as np
 import pandas as pd
@@ -43,14 +44,15 @@ def main(cfg: MLConfig):
     model = SVC()
     logging.info(f'Model: {model}')
 
-    distributions = dict(C=np.arange(40, 180, 5),
+    distributions = dict(C=stats.uniform(loc=1, scale=300),
                          kernel=['linear', 'rbf', 'sigmoid'],
                          gamma=['scale', 'auto'],
+                         tol=stats.uniform(loc=0, scale=1e-1),
                          decision_function_shape=['ovo', 'ovr'],
                          class_weight=[{0: 1, 1: 1}, {0: 1, 1: 2},
                                        {0: 1, 1: 3}, {0: 2, 1: 1}])
 
-    clf = RandomizedSearchCV(model, distributions, scoring='f1', random_state=0, verbose=2)
+    clf = RandomizedSearchCV(model, distributions, scoring='f1', random_state=0, verbose=2, n_iter=20, n_jobs=2)
     search = clf.fit(X_train, Y_train)
     model_params = search.best_params_
     model_params['probability'] = True

@@ -6,6 +6,7 @@ params:
   gamma: scale
   decision_function_shape: ovo
   C: 145
+  tol: 0.0623563
   probability: True
 
 add_params:

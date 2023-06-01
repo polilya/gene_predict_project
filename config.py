@@ -7,6 +7,7 @@ class ModelParams:
     gamma: str
     decision_function_shape: str
     C: int
+    tol: float
     probability: bool
 
 @dataclass

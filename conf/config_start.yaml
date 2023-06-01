@@ -2,10 +2,11 @@ params:
   class_weight:
       0: 1
       1: 2
-  kernel: linear
-  gamma: scale
+  kernel: rbf
+  gamma: auto
   decision_function_shape: ovo
-  C: 110
+  C: 165
+  tol: 0.0623563
   probability: True
 
 add_params:
