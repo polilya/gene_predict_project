@@ -2,10 +2,11 @@ add_params:
   plot: true
   step: 5
   windows:
+  - 10
+  - 30
   - 50
-  - 100
-  - 200
-  - 400
+
+
 files:
   cds: cds.csv
   cds_location: first_cds_location.csv

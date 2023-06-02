@@ -62,7 +62,7 @@ def main(cfg: MLConfig):
     metrcis_dist = []
     plot_status = cfg.add_params.plot
 
-    for graph in tqdm(range(0, cds_location_data.shape[0], 1)):
+    for graph in tqdm(range(0, cds_location_data.shape[0], 10)):
 
         i, j = cds_location_data[graph]
         length = j - i
@@ -87,7 +87,7 @@ def main(cfg: MLConfig):
         # for codon in local_start_codon:
         #     ax.axvspan(codon, codon + 3, alpha=0.5, color='green')
 
-        if plot_status and (res_metric > 0.55):
+        if plot_status and (res_metric > 0.65):
             logging.info(f'prob_metric for sample {graph:3}: {res_metric:.3f}')
             fig, ax = plt.subplots(dpi=120)
             ax.axvspan(i, j, alpha=0.6, color='red')
