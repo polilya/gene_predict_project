@@ -1,0 +1,37 @@
+add_params:
+  plot: false
+  step: 5
+  windows:
+  - 250
+  - 500
+  - 1000
+  - 2000
+files:
+  cds: cds.csv
+  cds_location: last_cds_location.csv
+  end_features: end_features.csv
+  exons: exons.csv
+  features: end_features.csv
+  first_cds_location: first_cds_location.csv
+  last_cds_location: last_cds_location.csv
+  sequence: chromosome1.fasta
+  start_features: start_features.csv
+params:
+  C: 196.93249763961953
+  class_weight:
+    0: 1
+    1: 1
+  decision_function_shape: ovo
+  gamma: auto
+  kernel: linear
+  probability: true
+  tol: 0.024442559200160276
+paths:
+  data: data
+  log: log
+preprocess_params:
+  end_max_length: 15000
+  end_min_length: 100
+  num_of_samples: 2000
+  start_max_length: 1500
+  start_min_length: 50

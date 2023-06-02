@@ -48,3 +48,4 @@ class MLConfig:
     params: ModelParams
     add_params: AddParams
     preprocess_params: PPParams
+

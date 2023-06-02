@@ -26,7 +26,7 @@ cs.store(name='ml_config', node=MLConfig)
 @hydra.main(config_path='conf', config_name='config_end', version_base=None)
 def main(cfg: MLConfig):
 
-    logging.info('Script starts')
+    logging.info('Model selection starts')
     hydra_cfg = HydraConfig.get()
     logging.info(f'Used config: {hydra_cfg.job.config_name}')
 
@@ -52,7 +52,7 @@ def main(cfg: MLConfig):
                          class_weight=[{0: 1, 1: 1}, {0: 1, 1: 2},
                                        {0: 1, 1: 3}, {0: 2, 1: 1}])
 
-    clf = RandomizedSearchCV(model, distributions, scoring='f1', random_state=0, verbose=2, n_iter=20, n_jobs=2)
+    clf = RandomizedSearchCV(model, distributions, scoring='f1', random_state=0, verbose=0, n_iter=20, n_jobs=4)
     search = clf.fit(X_train, Y_train)
     model_params = search.best_params_
     model_params['probability'] = True
@@ -64,7 +64,7 @@ def main(cfg: MLConfig):
     cfg_path = hydra_cfg.runtime.config_sources[1].path
     cfg_name = hydra_cfg.job.config_name
     tools.update_parameters(cfg_path, cfg_name, model_params)
-    logging.info('Script done!')
+    logging.info('Model parameters selected!')
 
 
 if __name__ == "__main__":
