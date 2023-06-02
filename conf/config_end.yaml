@@ -1,30 +1,27 @@
-params:
-  class_weight:
-      0: 1
-      1: 3
-  kernel: rbf
-  gamma: scale
-  decision_function_shape: ovo
-  C: 145
-  tol: 0.0623563
-  probability: True
-
 add_params:
-  windows:
-      - 250
-      - 500
-      - 1000
-      - 2000
+  plot: true
   step: 5
-  plot: True
-
+  windows:
+  - 250
+  - 500
+  - 1000
+  - 2000
 files:
-  sequence: chromosome1.fasta
   cds: cds.csv
   cds_location: last_cds_location.csv
   exons: exons.csv
   features: end_features.csv
-  
+  sequence: chromosome1.fasta
+params:
+  C: 165.64405117819743
+  class_weight:
+    0: 1
+    1: 2
+  decision_function_shape: ovo
+  gamma: auto
+  kernel: rbf
+  probability: true
+  tol: 0.062356369678597236
 paths:
   data: data
   log: log

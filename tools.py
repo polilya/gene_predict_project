@@ -6,6 +6,7 @@ import math
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+import yaml
 
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -158,3 +159,20 @@ def apply_lda(X_train, X_test, Y_train):
     X_test_new = LDA.transform(X_test)
     
     return X_train_new, X_test_new, LDA, x_scaler
+
+
+def update_parameters(config_path, config_name, model_params):
+
+    path_to_cfg = f'{config_path}/{config_name}'
+    with open(f'{path_to_cfg}.yaml') as f:
+        doc = yaml.safe_load(f)
+
+    for key, value in model_params.items():
+        if type(value) == np.float64:
+            model_params[key] = float(value)
+
+    doc['params'] = model_params
+
+    with open(f'{path_to_cfg}.yaml', 'w') as f:
+        yaml.dump(doc, f)
+

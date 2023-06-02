@@ -6,7 +6,7 @@ class ModelParams:
     kernel: str
     gamma: str
     decision_function_shape: str
-    C: int
+    C: float
     tol: float
     probability: bool
 

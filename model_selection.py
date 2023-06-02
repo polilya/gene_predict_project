@@ -23,7 +23,7 @@ cs = ConfigStore.instance()
 cs.store(name='ml_config', node=MLConfig)
 
 
-@hydra.main(config_path='conf', config_name='config_start', version_base=None)
+@hydra.main(config_path='conf', config_name='config_end', version_base=None)
 def main(cfg: MLConfig):
 
     logging.info('Script starts')
@@ -59,8 +59,14 @@ def main(cfg: MLConfig):
 
     logging.info(f'Model parameters: {model_params}')
     logging.info(f'Model best score: {search.best_score_:.3f}')
+
+    logging.info('Updating model parameters...')
+    cfg_path = hydra_cfg.runtime.config_sources[1].path
+    cfg_name = hydra_cfg.job.config_name
+    tools.update_parameters(cfg_path, cfg_name, model_params)
     logging.info('Script done!')
 
 
 if __name__ == "__main__":
     main()
+
