@@ -23,7 +23,7 @@ cs = ConfigStore.instance()
 cs.store(name='ml_config', node=MLConfig)
 
 
-@hydra.main(config_path='conf', config_name='config_end', version_base=None)
+@hydra.main(config_path='conf', config_name='config_start', version_base=None)
 def main(cfg: MLConfig):
 
     logging.info('Model selection starts')
@@ -52,7 +52,7 @@ def main(cfg: MLConfig):
                          class_weight=[{0: 1, 1: 1}, {0: 1, 1: 2},
                                        {0: 1, 1: 3}, {0: 2, 1: 1}])
 
-    clf = RandomizedSearchCV(model, distributions, scoring='f1', random_state=0, verbose=0, n_iter=20, n_jobs=4)
+    clf = RandomizedSearchCV(model, distributions, scoring='f1_weighted', random_state=0, verbose=0, n_iter=20, n_jobs=4)
     search = clf.fit(X_train, Y_train)
     model_params = search.best_params_
     model_params['probability'] = True
