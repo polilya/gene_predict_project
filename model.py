@@ -26,7 +26,7 @@ cs = ConfigStore.instance()
 cs.store(name='ml_config', node=MLConfig)
 
 
-@hydra.main(config_path='conf', config_name='config_end', version_base=None)
+@hydra.main(config_path='conf', config_name='config_start', version_base=None)
 def main(cfg: MLConfig):
 
     logging.info('Model.py starts')
@@ -45,10 +45,8 @@ def main(cfg: MLConfig):
     X = data.drop(['target'], axis=1).values
 
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.33, random_state=42, stratify=Y)
-
+    X_train, X_test, dim_reduction, x_scaler = tools.apply_lda(X_train, X_test, Y_train)
     model = SVC(**OmegaConf.to_container(cfg.params))
-
-    X_train, X_test, LDA, x_scaler = tools.apply_lda(X_train, X_test, Y_train)
 
     logging.info('Start training...')
     model.fit(X_train, Y_train)
@@ -64,14 +62,10 @@ def main(cfg: MLConfig):
     metrcis_dist = []
     plot_status = cfg.add_params.plot
 
-    for graph in tqdm(range(0, cds_location_data.shape[0], 50)):
+    for graph in tqdm(range(0, cds_location_data.shape[0], 1)):
 
         i, j = cds_location_data[graph]
         length = j - i
-
-        if plot_status:
-            fig, ax = plt.subplots(dpi=120)
-            ax.axvspan(i, j, alpha=0.6, color='red')
 
         scope = np.arange(i - 2*length, j + 2*length, step).astype('int')
 
@@ -82,7 +76,7 @@ def main(cfg: MLConfig):
                 scores = calculate_kmer_features(sequence[point - w // 2: point + w // 2], signs)['Entropy']
                 scores = scores.values.reshape(1, -1)
                 scores = x_scaler.transform(scores)
-                scores = LDA.transform(scores)
+                scores = dim_reduction.transform(scores)
                 res.append(model.predict_proba(scores)[0][1])
 
         res = np.array(res).reshape(len(cfg.add_params.windows), -1).mean(axis=0)
@@ -93,9 +87,14 @@ def main(cfg: MLConfig):
         # for codon in local_start_codon:
         #     ax.axvspan(codon, codon + 3, alpha=0.5, color='green')
 
-        if plot_status:
+        if plot_status and (res_metric > 0.55):
             logging.info(f'prob_metric for sample {graph:3}: {res_metric:.3f}')
+            fig, ax = plt.subplots(dpi=120)
+            ax.axvspan(i, j, alpha=0.6, color='red')
             plt.title(f'Example №{graph} [prob_metric: {res_metric:.3f}]')
+            plt.ylim(0, 1)
+            plt.ylabel('Probability')
+            plt.xlabel('Sequence number of the nucleotide')
             plt.plot(scope, res)
             plt.show()
 
@@ -109,6 +108,8 @@ def main(cfg: MLConfig):
     x_d = np.linspace(x[0], x[-1], 500)
     plt.plot(x_d, density(x_d))
     plt.title(f'Dice metric distribution [μ={mu:.2f} std={sigma:.2f}]')
+    plt.xlabel('Dice metric')
+    plt.ylabel('Probability density')
     plt.show()
 
     logging.info(f'Mean of Dice metric distribution: {mu:.2f}')
