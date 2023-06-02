@@ -16,7 +16,7 @@ add_params:
       - 1000
       - 2000
   step: 5
-  plot: False
+  plot: True
 
 files:
   sequence: chromosome1.fasta

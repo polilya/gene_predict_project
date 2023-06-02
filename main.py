@@ -1,5 +1,4 @@
 import logging
-
 from Bio import SeqIO
 
 import hydra
@@ -27,7 +26,7 @@ cs = ConfigStore.instance()
 cs.store(name='ml_config', node=MLConfig)
 
 
-@hydra.main(config_path='conf', config_name='config_start', version_base=None)
+@hydra.main(config_path='conf', config_name='config_end', version_base=None)
 def main(cfg: MLConfig):
 
     logging.info('Script start')
@@ -65,7 +64,7 @@ def main(cfg: MLConfig):
     metrcis_dist = []
     plot_status = cfg.add_params.plot
 
-    for graph in tqdm(range(0, cds_location_data.shape[0], 10)):
+    for graph in tqdm(range(0, cds_location_data.shape[0], 50)):
 
         i, j = cds_location_data[graph]
         length = j - i
