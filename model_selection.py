@@ -35,7 +35,7 @@ def main(cfg: MLConfig):
     Y = data['target'].values
     X = data.drop(['target'], axis=1).values
 
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.33, random_state=42, stratify=Y)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42, stratify=Y, shuffle=True)
     logging.info(f'X_train shape: {(X_train.shape[0], X_train.shape[1])}')
 
     X_train, X_test, dim_reduction, x_scaler = tools.apply_lda(X_train, X_test, Y_train)
@@ -44,18 +44,18 @@ def main(cfg: MLConfig):
     model = SVC()
     logging.info(f'Model: {model}')
 
-    distributions = dict(C=stats.uniform(loc=1, scale=300),
-                         kernel=['linear', 'rbf', 'sigmoid'],
+    distributions = dict(C=stats.uniform(loc=1, scale=200),
+                         kernel=['linear', 'rbf'],
                          gamma=['scale', 'auto'],
                          tol=stats.uniform(loc=0, scale=1e-1),
                          decision_function_shape=['ovo', 'ovr'],
                          class_weight=[{0: 1, 1: 1}, {0: 1, 1: 2},
                                        {0: 1, 1: 3}, {0: 2, 1: 1}])
 
-    clf = RandomizedSearchCV(model, distributions, scoring='f1_weighted', random_state=0, verbose=0, n_iter=20, n_jobs=4)
+    clf = RandomizedSearchCV(model, distributions, scoring='f1', random_state=0, verbose=0, n_iter=10, n_jobs=4)
     search = clf.fit(X_train, Y_train)
     model_params = search.best_params_
-    model_params['probability'] = True
+    #model_params['probability'] = True
 
     logging.info(f'Model parameters: {model_params}')
     logging.info(f'Model best score: {search.best_score_:.3f}')

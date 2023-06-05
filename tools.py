@@ -137,7 +137,7 @@ def apply_pca(X_train, X_test, Y_train=0):
     X_train_scaled = x_scaler.fit_transform(X_train)
     X_test_scaled = x_scaler.transform(X_test)
 
-    pca = PCA(n_components=0.9)
+    pca = PCA(n_components=0.85)
     pca.fit(X_train_scaled)
 
     PC_train, PC_test = pca.transform(X_train_scaled), pca.transform(X_test_scaled)

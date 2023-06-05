@@ -1,9 +1,9 @@
 preprocess_params:
-  num_of_samples: 3000
-  start_min_length: 50
-  start_max_length: 1500
-  end_min_length: 100
-  end_max_length: 15000
+  num_of_samples: 2000
+  start_min_length: 16
+  start_max_length: 1600
+  end_min_length: 16
+  end_max_length: 16000
 
 files:
   sequence: chromosome1.fasta

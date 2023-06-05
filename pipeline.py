@@ -11,7 +11,7 @@ cs = ConfigStore.instance()
 cs.store(name='ml_config', node=MLConfig)
 
 
-@hydra.main(config_path='conf', config_name='config_pipeline_end', version_base=None)
+@hydra.main(config_path='conf', config_name='config_pipeline_start', version_base=None)
 def main(cfg: MLConfig):
     data_preprocessing.main(cfg)
     model_selection.main(cfg)

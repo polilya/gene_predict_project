@@ -4,8 +4,7 @@ add_params:
   windows:
   - 250
   - 500
-  - 1000
-  - 2000
+
 files:
   cds: cds.csv
   cds_location: last_cds_location.csv

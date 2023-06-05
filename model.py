@@ -44,7 +44,7 @@ def main(cfg: MLConfig):
     Y = data['target'].values
     X = data.drop(['target'], axis=1).values
 
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.33, random_state=42, stratify=Y)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42, stratify=Y, shuffle=True)
     X_train, X_test, dim_reduction, x_scaler = tools.apply_lda(X_train, X_test, Y_train)
     model = SVC(**OmegaConf.to_container(cfg.params))
 
@@ -77,7 +77,8 @@ def main(cfg: MLConfig):
                 scores = scores.values.reshape(1, -1)
                 scores = x_scaler.transform(scores)
                 scores = dim_reduction.transform(scores)
-                res.append(model.predict_proba(scores)[0][1])
+                #res.append(model.predict_proba(scores)[0][1])
+                res.append(model.predict(scores)[0])
 
         res = np.array(res).reshape(len(cfg.add_params.windows), -1).mean(axis=0)
         res_metric = tools.dice_metric(res, length, step)
@@ -87,7 +88,7 @@ def main(cfg: MLConfig):
         # for codon in local_start_codon:
         #     ax.axvspan(codon, codon + 3, alpha=0.5, color='green')
 
-        if plot_status and (res_metric > 0.65):
+        if plot_status and (res_metric > 0.01):
             logging.info(f'prob_metric for sample {graph:3}: {res_metric:.3f}')
             fig, ax = plt.subplots(dpi=120)
             ax.axvspan(i, j, alpha=0.6, color='red')
