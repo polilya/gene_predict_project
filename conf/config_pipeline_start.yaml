@@ -1,5 +1,7 @@
 add_params:
-  plot: false
+  data: test
+  num_of_plots: 3
+  plot: true
   step: 5
   windows:
   - 10
@@ -7,6 +9,7 @@ add_params:
 files:
   cds: cds.csv
   cds_location: first_cds_location.csv
+  codon_loc: start_codon_location.csv
   end_features: end_features.csv
   exons: exons.csv
   features: start_features.csv
@@ -15,15 +18,14 @@ files:
   sequence: chromosome1.fasta
   start_features: start_features.csv
 params:
-  C: 110.76270078546494
+  C: 85.73095986778094
   class_weight:
     0: 1
     1: 2
   decision_function_shape: ovo
-  gamma: auto
+  gamma: scale
   kernel: rbf
-  probability: true
-  tol: 0.062356369678597236
+  tol: 0.08917730007820798
 paths:
   data: data
   log: log

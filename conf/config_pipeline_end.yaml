@@ -1,6 +1,8 @@
 add_params:
   plot: false
   step: 5
+  data: test
+  num_of_plots: 3
   windows:
   - 250
   - 500
@@ -15,6 +17,7 @@ files:
   last_cds_location: last_cds_location.csv
   sequence: chromosome1.fasta
   start_features: start_features.csv
+  codon_loc: stop_codon_location.csv
 params:
   C: 196.93249763961953
   class_weight:

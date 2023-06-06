@@ -15,6 +15,8 @@ class AddParams:
     windows: list
     step: int
     plot: bool
+    data: str
+    num_of_plots: int
     
 @dataclass
 class PPParams:
@@ -40,6 +42,7 @@ class Files:
     last_cds_location: str
     start_features: str
     end_features: str
+    codon_loc: str
 
 @dataclass
 class MLConfig:

@@ -1,6 +1,8 @@
 add_params:
   plot: true
   step: 5
+  data: train
+  num_of_plots: 3
   windows:
   - 100
 files:
@@ -9,6 +11,7 @@ files:
   exons: exons.csv
   features: start_features.csv
   sequence: chromosome1.fasta
+  codon_loc: start_codon_location.csv
 params:
   C: 196.7236684465528
   class_weight:

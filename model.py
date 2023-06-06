@@ -16,7 +16,7 @@ from tqdm import tqdm
 import tools
 from tools import calculate_kmer_features, signs
 
-np.random.seed(42)
+#np.random.seed(42)
 
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
@@ -40,12 +40,21 @@ def main(cfg: MLConfig):
     data = pd.read_csv(f'{cfg.paths.data}/{cfg.files.features}')
     cds_location_data = pd.read_csv(f'{cfg.paths.data}/{cfg.files.cds_location}')
     cds_location_data = np.array(cds_location_data)
+    codon_location = pd.read_csv(f'{cfg.paths.data}/{cfg.files.codon_loc}').values.squeeze()
 
-    Y = data['target'].values
-    X = data.drop(['target'], axis=1).values
+    Y = data['target']
+    X = data.drop(['target'], axis=1)
+    type_of_data = cfg.add_params.data
 
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42, stratify=Y, shuffle=True)
-    X_train, X_test, dim_reduction, x_scaler = tools.apply_lda(X_train, X_test, Y_train)
+
+    if type_of_data == 'test':
+        indices = X_test.index[X_test.index < cds_location_data.shape[0]].values
+    elif type_of_data == 'train':
+        indices = X_train.index[X_train.index < cds_location_data.shape[0]].values
+
+    X_train, X_test, dim_reduction, x_scaler = tools.apply_lda(X_train.values, X_test.values, Y_train.values)
+
     model = SVC(**OmegaConf.to_container(cfg.params))
 
     logging.info('Start training...')
@@ -53,16 +62,15 @@ def main(cfg: MLConfig):
     logging.info('Training done')
     prediction = model.predict(X_test)
 
-    logging.info(f'f1 score: {f1_score(Y_test, prediction):.3f}')
-
-    #loc_start_codon = [m.start() for m in re.finditer('ATG', sequence)]
+    logging.info(f'f1 score: {f1_score(Y_test, prediction, average="binary"):.3f}')
     logging.info('Start evaluation...')
 
     step = cfg.add_params.step
-    metrcis_dist = []
     plot_status = cfg.add_params.plot
 
-    for graph in tqdm(range(0, cds_location_data.shape[0], 10)):
+    num_of_plots = cfg.add_params.num_of_plots
+
+    for graph in list(np.random.choice(indices, size=num_of_plots)):
 
         i, j = cds_location_data[graph]
         length = j - i
@@ -81,40 +89,21 @@ def main(cfg: MLConfig):
                 res.append(model.predict(scores)[0])
 
         res = np.array(res).reshape(len(cfg.add_params.windows), -1).mean(axis=0)
-        res_metric = tools.dice_metric(res, length, step)
-        metrcis_dist.append(res_metric)
 
-        # local_start_codon = [c for c in loc_start_codon if ((c >= i - lb) and (c <= j + rb))]
-        # for codon in local_start_codon:
-        #     ax.axvspan(codon, codon + 3, alpha=0.5, color='green')
+        border_codons_location = [c for c in codon_location if ((c >= i - 2*length) and (c <= j + 2*length))]
 
-        if plot_status and (res_metric > 0.01):
-            logging.info(f'prob_metric for sample {graph:3}: {res_metric:.3f}')
+        if plot_status:
             fig, ax = plt.subplots(dpi=120)
-            ax.axvspan(i, j, alpha=0.6, color='red')
-            plt.title(f'Example №{graph} [prob_metric: {res_metric:.3f}]')
-            plt.ylim(0, 1)
-            plt.ylabel('Probability')
+            ax.axvspan(i, j, alpha=0.6, color='red', label='Positive area')
+            plt.title(f'Example №{graph} [{type_of_data}]')
+            plt.ylim(-0.1, 1.1)
+            plt.ylabel('Predicted class')
             plt.xlabel('Sequence number of the nucleotide')
-            plt.plot(scope, res)
+            plt.plot(scope, res, color='darkblue', linestyle='--')
+            plt.scatter(scope, res, color='blue', s=20, label='Predicted class')
+            for loc in border_codons_location:
+                ax.axvspan(loc, loc + 3, alpha=0.8, color='darkgreen', label='Start codon location')
             plt.show()
-
-    mu = np.array(metrcis_dist).mean()
-    sigma = np.array(metrcis_dist).std()
-
-    dist = np.random.normal(mu, sigma, 1000)
-    density = stats.gaussian_kde(dist)
-
-    n, x, _ = plt.hist(metrcis_dist, density=True, bins='sturges', linewidth=1, color='skyblue', edgecolor='black')
-    x_d = np.linspace(x[0], x[-1], 500)
-    plt.plot(x_d, density(x_d))
-    plt.title(f'Dice metric distribution [μ={mu:.2f} std={sigma:.2f}]')
-    plt.xlabel('Dice metric')
-    plt.ylabel('Probability density')
-    plt.show()
-
-    logging.info(f'Mean of Dice metric distribution: {mu:.2f}')
-    logging.info(f'Std of Dice metric distribution: {sigma:.2f}')
 
     logging.info('Evaluation done!')
 
