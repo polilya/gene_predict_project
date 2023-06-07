@@ -7,3 +7,11 @@ tqdm
 scikit-learn
 scipy
 PyYAML
+gff3-parser
+DataLoader
+tensorflow
+hmmlearn
+sklearn
+torch
+keras
+Bio
