@@ -86,8 +86,8 @@ def main(cfg: MLConfig):
     seq_zero_location = []
     for _ in tqdm(range(n)):
         b = np.random.randint(1e4, 2e8)
-        scale = np.random.randint(400, 800)
-        L = int(np.random.exponential(scale=scale) + 50)
+        scale = np.random.randint(200, 600)
+        L = int(np.random.exponential(scale=scale) + 16)
         bounds = (b, b + L)
         flag = tools.check_intersection(bounds, start_cds_location_data, end_cds_location_data)
         if flag:
