@@ -19,7 +19,7 @@ class AddParams:
     num_of_plots: int
     
 @dataclass
-class PPParams:
+class PreprocessParams:
     num_of_samples: int
     start_min_length: int
     start_max_length: int
@@ -50,5 +50,5 @@ class MLConfig:
     files: Files
     params: ModelParams
     add_params: AddParams
-    preprocess_params: PPParams
+    preprocess_params: PreprocessParams
 
