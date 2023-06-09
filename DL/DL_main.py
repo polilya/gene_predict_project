@@ -2,6 +2,7 @@
 
 import os
 import random
+import time
 
 import gff3_parser
 import keras
@@ -32,8 +33,12 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import to_categorical
 from torch.autograd import Function
-from torch.nn import GRU, Conv1d, Dropout, Linear, Module, ModuleList, ReLU, Sigmoid
+from torch.nn import GRU, Conv1d, Linear, Module, ModuleList, ReLU, Sigmoid#, 'Dropout'
 from torch.utils.data import DataLoader, Dataset
+
+import optuna
+from optuna.trial import TrialState
+from torch.utils.data import DataLoader
 
 import classes
 import dataparser
@@ -60,7 +65,7 @@ from dataparser import (
     preprocess_data,
     print_sequence_with_mask,
 )
-from model_utils import evaluate, evaluate_model, train, train_model, train_model_N6
+from model_utils import evaluate, evaluate_model, train, train_model, train_model_N6, objective
 
 # ML_main.py
 
@@ -69,12 +74,13 @@ from model_utils import evaluate, evaluate_model, train, train_model, train_mode
 gene_data = os.path.join("..", "data", "genomic.gff")
 sequence_data = os.path.join("..", "data", "chromosome1.fasta")
 
-# Используйте ваши функции из utils.py
+# Используйте ваши функции из .py
 sequence = parse_sequence(sequence_data)
 data = parse_data(gene_data)
 
+Nomber_of=1000
 # Обработка и получение данных
-cds = preprocess_data(data, sequence, 1000)
+cds = preprocess_data(data, sequence, Nomber_of)
 del data
 
 # Вычисление и печать длины сегментов
@@ -91,7 +97,7 @@ plt.title("Распределение длин элементов")
 # plt.show()
 
 # Построение гистограммы с логарифмической осью X
-plt.hist(lengths, bins=1000)
+plt.hist(lengths, bins=10)
 plt.xscale("log")
 plt.xlabel("Длина")
 plt.ylabel("Количество элементов")
@@ -105,8 +111,8 @@ cds_short = cds[(cds["segments"].str.len() >= 9) & (cds["segments"].str.len() <=
 end_value = cds_short["End"]
 
 # Вычисление длины отрезков
-after_segment_length = 1000 - cds_short["segment_length"]
-# print(after_segment_length)
+after_segment_length = Nomber_of - cds_short["segment_length"]
+print(after_segment_length)
 
 after_segment_length_ch = after_segment_length.apply(
     lambda x: x + 1 if x % 2 != 0 else x
@@ -197,7 +203,7 @@ train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
 print("Размер тренировочного набора:", train_df.shape)
 print("Размер тестового набора:", test_df.shape)
 
-##Сеть 1
+'''##Сеть 1
 print("Начало сети 1")
 # Создание модели HMM
 model = hmm.MultinomialHMM(n_components=2)  # Количество скрытых состояний равно 2
@@ -279,6 +285,8 @@ loss, accuracy = model.evaluate(X_test, y_test)
 print("Потери:", loss)
 print("Точность:", accuracy)
 print("Конец сети 1")
+'''
+
 ##СЕТЬ 2
 print("Начало сети 2")
 # Гиперпараметры для настройки модели
@@ -357,7 +365,7 @@ for epoch in range(num_epochs):
     print(
         f"Epoch: {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}"
     )
-
+'''
 # СЕТЬ 3
 print("Начало сети 3")
 # Загрузка данных из файлов с разрешением pickle
@@ -396,7 +404,7 @@ train_labels = torch.tensor(train_labels)
 test_data = torch.tensor(test_data)
 test_labels = torch.tensor(test_labels)
 
-"""# Создание модели
+# Создание модели
 input_size = train_data.size(1)
 hidden_size = 128
 num_classes = 2
@@ -420,9 +428,9 @@ evaluate_model(model,
     test_data,
     test_labels,
     num_epochs,
-    batch_size,)"""
+    batch_size,)
 
-print("Конец сети 3")
+print("Конец сети 3")'''
 # СЕТЬ 4
 print("Начало сети 4")
 print("Конец сети 4")
@@ -531,7 +539,7 @@ guided_grad_cam = GuidedGradCam2(model, target_layer="fc")
 # Generate the Guided Grad-CAM visualization
 cam = guided_grad_cam.generate(target_class=sample_label)"""
 
-print("Конец сети 5")
+'''print("Конец сети 5")
 # СЕТЬ 6
 print("Начало сети 6")
 # Load DNA sequence data and labels (example using DeepBind dataset)
@@ -583,9 +591,93 @@ batch_size = 32
 # Train the model
 train_model_N6(
     model, train_data, train_labels, test_data, test_labels, num_epochs, batch_size
-)
+)'''
 
 print("Конец сети 6")
 # СЕТЬ 7
 print("Начало сети 7")
-print("Конец сети 7")
+
+# Ваши преобразования данных
+X = filtered_df1["Предложение"].values
+y = filtered_df1["Метка"].values
+
+# Сохранение данных в файлы
+np.save("X.npy", X)
+np.save("y.npy", y)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+input_size = train_df.shape[1] + 1
+output_size = 1
+
+# Создание объектов Dataset для обучающего и тестового наборов
+train_dataset = Data(X_train, y_train)
+test_dataset = Data(X_test, y_test)
+def objective(trial):
+    # Определяем гиперпараметры, которые хотим оптимизировать
+    lr = trial.suggest_loguniform("lr", 1e-5, 1e-1)
+    batch_size = trial.suggest_categorical("batch_size", [32, 64, 128, 256])
+    dropout_rate = trial.suggest_uniform("dropout_rate", 0, 1)
+    hidden_sizes = [trial.suggest_int("hidden_size_{}".format(i), 64, 512) for i in range(3)]  # Пример для трех слоев
+    window_sizes = [3, 4, 5]
+    paddings = [0, 0, 0]
+    num_epochs = trial.suggest_int('num_epochs', 10, 16, step= 2)
+    start_time = time.time()
+
+    # Создаем DataLoader с выбранным batch_size
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    # Создаем модель с выбранными гиперпараметрами
+    model = ConvNet(input_size, hidden_sizes, output_size, window_sizes, paddings, dropout_rate)
+
+    # Оптимизатор и функция потерь
+    optimizer = optim.SGD(model.parameters(), lr=lr)
+    criterion = nn.BCELoss()
+
+    start_time = time.time()  # Запись начального времени
+
+    for epoch in range(num_epochs):
+        # Обучение
+        train_loss, train_accuracy = train(model, train_dataloader, optimizer, criterion)
+
+        # Проверка
+        val_loss, val_accuracy = evaluate(model, test_dataloader, criterion)
+
+        trial.report(val_loss, epoch)
+
+        # Если обучение не улучшается, можно остановить его раньше
+        if trial.should_prune():
+            raise optuna.exceptions.TrialPruned()
+
+    end_time = time.time()  # Запись конечного времени
+    elapsed_time = end_time - start_time  # Вычисление затраченного времени
+
+    time_weight = 0  # Устанавливаем веса времени меньше 1, чтобы уменьшить его влияние
+    total_loss = val_loss + time_weight * elapsed_time
+
+    return total_loss
+
+
+study = optuna.create_study(direction="minimize")
+study.optimize(objective, n_trials=100)
+
+pruned_trials = study.get_trials(deepcopy=False, states=[TrialState.PRUNED])
+complete_trials = study.get_trials(deepcopy=False, states=[TrialState.COMPLETE])
+
+print("Study statistics: ")
+print("  Number of finished trials: ", len(study.trials))
+print("  Number of pruned trials: ", len(pruned_trials))
+print("  Number of complete trials: ", len(complete_trials))
+
+print("Best trial:")
+trial = study.best_trial
+
+print("  Value: ", trial.value)
+
+print("  Params: ")
+for key, value in trial.params.items():
+    print("    {}: {}".format(key, value))
+
+print("Конец сети 7")'''

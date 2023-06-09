@@ -57,7 +57,7 @@ def evaluate(model, dataloader, criterion):
 
 def train_model(
     model, train_data, train_labels, test_data, test_labels, num_epochs, batch_size
-):
+    ):
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters())
 
@@ -144,3 +144,37 @@ def train_model_N6(
         print(
             f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}, Train Acc: {train_acc:.4f}, Test Acc: {test_acc:.4f}"
         )
+
+
+def objective(trial):
+    # Определяем гиперпараметры, которые хотим оптимизировать
+    lr = trial.suggest_loguniform("lr", 1e-5, 1e-1)
+    batch_size = trial.suggest_categorical("batch_size", [64, 128, 256])
+    dropout_rate = trial.suggest_uniform("dropout_rate", 0, 1)
+    hidden_sizes = [trial.suggest_int("hidden_size_{}".format(i), 64, 512) for i in range(3)]  # Пример для трех слоев
+
+    # Создаем DataLoader с выбранным batch_size
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    # Создаем модель с выбранными гиперпараметрами
+    model = ConvNet(input_size, hidden_sizes, output_size, window_sizes, paddings, dropout_rate)
+
+    # Оптимизатор и функция потерь
+    optimizer = optim.SGD(model.parameters(), lr=lr)
+    criterion = nn.BCELoss()
+
+    for epoch in range(num_epochs):
+        # Обучение
+        train_loss, train_accuracy = train(model, train_dataloader, optimizer, criterion)
+
+        # Проверка
+        val_loss, val_accuracy = evaluate(model, test_dataloader, criterion)
+
+        trial.report(val_loss, epoch)
+
+        # Если обучение не улучшается, можно остановить его раньше
+        if trial.should_prune():
+            raise optuna.exceptions.TrialPruned()
+
+    return val_loss
