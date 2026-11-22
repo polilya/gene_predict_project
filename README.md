@@ -1,3 +1,7 @@
+> **Gene prediction on human chromosome 1.** Team course project, Bauman Moscow State Technical University (2023): an ML pipeline (SVM on sliding-window sequence features) and a CNN baseline that locate the 5′ and 3′ UTR boundaries of coding regions. The documentation below is in Russian.
+>
+> Follow-up individual work: [dna-cds-unet-segmentation](https://github.com/polilya/dna-cds-unet-segmentation), a 1D U-Net that segments coding sequences directly.
+
 # Разработка пайплайна проекта "Предсказание генов"
 Предсказание генов – определение кодирующих и регуляторных последовательностей ДНК в геноме. Кодирующие последовательности - последовательности, несущие информацию о строении белков. Регуляторные последовательности – вспомогательные последовательности в цепочке преобразования последовательности ДНК в белок.
 
